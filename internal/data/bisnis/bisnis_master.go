@@ -1,8 +1,9 @@
 package bisnis
 
 import (
+	bisnisEntity "bisnis-be/internal/entity/bisnis"
+	"bisnis-be/pkg/errors"
 	"context"
-	agentEntity "bisnis-be/internal/entity/agent"
 )
 
 // func (d Data) GetGoldUser(ctx context.Context) ([]goldEntity.GetGoldUser, error) {
@@ -29,9 +30,94 @@ import (
 // 	return users, err
 // }
 
-func (d Data) LoginAgent(ctx context.Context, agentUser agentEntity.LoginAgent) error {
+func (d Data) AddTransaction(ctx context.Context, addTransaction bisnisEntity.AddTransaction) (int, error) {
 	var (
-		err error
+		transaction bisnisEntity.Transaction
+		err         error
 	)
-	return err
+	_, err = (*d.stmt)[insertTransaction].ExecContext(ctx,
+		addTransaction.AgentID,
+		addTransaction.ProductID,
+		addTransaction.Nama,
+		addTransaction.Usia,
+		addTransaction.Premium,
+	)
+	if err != nil {
+		return transaction.TransID, errors.Wrap(err, "[DATA][AddTransaction][insertTransaction]")
+	}
+
+	rows, err := (*d.stmt)[getTransaction].QueryxContext(ctx, addTransaction.AgentID,
+		addTransaction.ProductID,
+		addTransaction.Nama,
+		addTransaction.Usia,
+		addTransaction.Premium)
+	if err != nil {
+		return transaction.TransID, errors.Wrap(err, "[DATA] [AddTransaction][getTransaction]")
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		if err = rows.StructScan(&transaction); err != nil {
+			return transaction.TransID, errors.Wrap(err, "[DATA][AddTransaction][StructScan]")
+		}
+	}
+	return transaction.TransID, err
+}
+
+func (d Data) DeleteTransaction(ctx context.Context, deleteTransactionz bisnisEntity.DeleteTransaction) (int, string, error) {
+	var (
+		transaction bisnisEntity.Transaction
+		result      string
+		err         error
+	)
+	res, err := (*d.stmt)[deleteTransaction].ExecContext(ctx,
+		deleteTransactionz.AgentID,
+		deleteTransactionz.TransID,
+	)
+	if err != nil {
+		return transaction.TransID, "Error ExecContext", errors.Wrap(err, "[DATA][AddTransaction][insertTransaction]")
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return transaction.TransID, "Error RowsAffected", errors.Wrap(err, "[DATA][DeleteTransaction][RowsAffected]")
+	}
+
+	if rowsAffected == 0 {
+		result = "Data not Found"
+		return transaction.TransID, result, errors.New("no transaction deleted")
+	}
+	return transaction.TransID, "Success", err
+}
+
+func (d Data) UpdateTransaction(ctx context.Context, addTransaction bisnisEntity.UpdateTransaction) (int, string, error) {
+	var (
+		transaction bisnisEntity.Transaction
+		result      string
+		err         error
+	)
+	res, err := (*d.stmt)[updateTransaction].ExecContext(ctx,
+		addTransaction.Nama,
+		addTransaction.Usia,
+		addTransaction.Premium,
+		addTransaction.TransID,
+		addTransaction.AgentID,
+		addTransaction.ProductID,
+	)
+	if err != nil {
+		return transaction.TransID, "Error ExecContext", errors.Wrap(err, "[DATA][AddTransaction][insertTransaction]")
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return transaction.TransID, "Error RowsAffected", errors.Wrap(err, "[DATA][DeleteTransaction][RowsAffected]")
+	}
+
+	if rowsAffected == 0 {
+		result = "Data not Updated"
+		return transaction.TransID, result, errors.New("no transaction deleted")
+	}
+
+	result = "Success"
+
+	return transaction.TransID, result, err
 }

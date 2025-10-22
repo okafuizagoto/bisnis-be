@@ -1,5 +1,58 @@
-# Go + auth Quickstart for Jenkins X           
-# Detail Query
+# Go + auth Quickstart for Jenkins X   
+# Jawaban Query Test Analisa Database
+1. select count(*) as jumlah from vm1dta_chdrpf where validflag = 1;
+2. select case statcode WHEN 'IF' THEN 'In Force'
+        WHEN 'PO' THEN 'Postpone'
+        WHEN 'WD' THEN 'Withdrawn'
+        WHEN 'SU' THEN 'Surrender'
+        WHEN 'LA' THEN 'Lapsed'
+        WHEN 'PT' THEN 'Postterm' end AS status, count(statcode) as Jumlah from vm1dta_chdrpf group by statcode;
+3. SELECT 
+    c.cnttype AS KODE_PRODUK,
+    d.longdesc AS NAMA_PRODUK,
+    COUNT(*) AS JUMLAH
+    FROM vm1dta_chdrpf c
+    JOIN vm1dta_descpf d 
+    ON c.cnttype = d.descitem
+    WHERE 
+    c.VALIDFLAG = 1
+    AND d.desctabl = 't5688'
+    GROUP BY 
+    c.cnttype, d.longdesc
+    ORDER BY 
+    JUMLAH DESC;     
+4. SELECT DISTINCT
+    a.agntnum AS NOMOR_AGEN,
+    c.surname AS NAMA_AGEN,
+    CONCAT_WS(', ', c.cltaddr01, c.cltaddr02, c.cltaddr03, c.cltaddr04, c.cltaddr05) AS ALAMAT_AGEN
+    FROM vm1dta_chdrpf h
+    JOIN vm1dta_descpf d ON h.cnttype = d.descitem
+    JOIN vm1dta_agntpf a ON h.agntnum = a.agntnum
+    JOIN vm1dta_clntpf c ON a.clntnum = c.clntnum
+    WHERE d.desctabl = 't5688' AND h.VALIDFLAG = 1;   
+5. SELECT
+    p.chdrnum AS NOMOR_POLIS,
+    p.cnttype AS KODE_PRODUK,
+    dp.longdesc AS NAMA_PRODUK,
+    ds.longdesc AS STATUS_PRODUK,
+    CASE
+    WHEN p.VALIDFLAG = 1 THEN 'VALID'
+    ELSE 'TIDAK VALID'
+    END AS STATUS_VALID,
+    cp.surname AS NAMA_PEMEGANG_POLIS,
+    CONCAT_WS(', ', cp.cltaddr01, cp.cltaddr02, cp.cltaddr03, cp.cltaddr04, cp.cltaddr05) AS ALAMAT_PEMEGANG_POLIS,
+    a.agntnum AS NOMOR_AGEN,
+    ca.surname AS NAMA_AGEN,
+    CONCAT_WS(', ', ca.cltaddr01, ca.cltaddr02, ca.cltaddr03, ca.cltaddr04, ca.cltaddr05) AS ALAMAT_AGEN
+    FROM vm1dta_chdrpf p
+    JOIN vm1dta_descpf dp ON p.cnttype = dp.descitem AND dp.desctabl = 't5688'
+    JOIN vm1dta_descpf ds ON p.statcode = ds.descitem AND ds.desctabl = 't3623'
+    JOIN vm1dta_clntpf cp ON p.cownnum = cp.clntnum
+    JOIN vm1dta_agntpf a ON p.agntnum = a.agntnum
+    JOIN vm1dta_clntpf ca ON a.clntnum = ca.clntnum
+    WHERE p.chdrnum = '90000105'; 
+
+# Detail Query Back End
 CREATE TABLE bisnis.product (
     product_id VARCHAR(100) NOT NULL PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
@@ -56,10 +109,18 @@ INSERT INTO bisnis.agen
 select 'BFA01', 'Agent Satu', 'P@ssagent1', CASE WHEN 'Y' = 'Y' THEN 1 ELSE 0 END, NOW();
 
 # Deploy Docker
-1. docker compose up
-2. docker sudah jalan dan bisa langsung digunakan dengan link http://localhost:4334/
+1. buka cmd atau terminal docker
+2. direct ke repo golang, misal cd go/src/bisnis-be
+2. docker compose up --build
+3. docker sudah jalan dan bisa langsung digunakan dengan link http://localhost:8080/
 
 # Alur API
 1. API dapat di akses di postman collection
 2. Mengambil token dari endpoint loginagent
-3. Pada saat mengakses endpoint addagent, deleteagent, dan updateagent, diperlukan isi body sesuai yang ada di postman dan mengisi Authorization di Header dengan mengisi token dari endpoint loginagent
+3. Pada saat mengakses endpoint addagent, deleteagent, updateagent, addtransaction, deletetransaction, updatetransaction, diperlukan isi body sesuai yang ada di postman dan mengisi Authorization di Header dengan mengisi token dari endpoint loginagent
+
+# AI
+AI menggunakan chatgpt, penggunaan ai digunakan pada saat mencari beberapa syntax yang lupa
+
+# Redis
+redis digunakan pada saat create token baru di endpoint loginagent (set redis), sehingga ketika agent_id yang sudah pernah dihit sebelumnya di hit kembali, tidak akan create ualng token tetapi menggunakan token lama dengan ttl / time duration sama seperti token expired.

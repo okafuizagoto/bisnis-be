@@ -27,26 +27,6 @@ services:
 #     timeout: 10s
 #     retries: 5
 #     start_period: 20s
-
-  app:
-    image: golang:1.23
-    container_name: golang-bisnis-app
-    depends_on:
-      # - kafka
-      - mysql_bisnis
-    environment:
-      # - KAFKA_BROKER=kafka:29092
-      - MYSQL_HOST=mysql_bisnis
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=admin
-      - MYSQL_DB=bisnis
-    ports:
-      - "8080:8080"
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: go run cmd/http/main.go
-    restart: unless-stopped
   mysql_bisnis:
     image: mysql:8.0
     container_name: mysql-bisnis-local
@@ -80,6 +60,25 @@ services:
     volumes:
       - ./redis-data:/data
     command: ["redis-server", "--appendonly", "yes"] # mengaktifkan AOF (durability)
+    restart: unless-stopped
+  app:
+    image: golang:1.23
+    container_name: golang-bisnis-app
+    depends_on:
+      # - kafka
+      - mysql_bisnis
+    environment:
+      # - KAFKA_BROKER=kafka:29092
+      - MYSQL_HOST=mysql_bisnis
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=admin
+      - MYSQL_DB=bisnis
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: go run cmd/http/main.go
     restart: unless-stopped
 volumes:
   mysql-bisnis-data:

@@ -6,6 +6,7 @@ import (
 	jaegerLog "bisnis-be/pkg/log"
 	"context"
 	"errors"
+	"time"
 
 	"github.com/opentracing/opentracing-go"
 	// "go.opentelemetry.io/otel/trace"
@@ -20,10 +21,16 @@ type agentzData interface {
 	UpdateAgent(ctx context.Context, agentLogin agentEntity.AgentRequest) (agentEntity.Agent, string, error)
 }
 
+type rediszData interface {
+	AddToRedis(ctx context.Context, data interface{}, key string, ttl time.Duration) (err error)
+	GetFromRedis(ctx context.Context, key string, dest interface{}) (err error)
+}
+
 // Service ...
 // Tambahkan variable sesuai banyak data layer yang dibutuhkan
 type Service struct {
 	agent  agentzData
+	redis  rediszData
 	tracer opentracing.Tracer
 	// tracer trace.Tracer
 	logger jaegerLog.Factory
@@ -31,10 +38,11 @@ type Service struct {
 
 // New ...
 // Tambahkan parameter sesuai banyak data layer yang dibutuhkan
-func New(agentData agentzData, tracer opentracing.Tracer, logger jaegerLog.Factory) Service {
+func New(agentData agentzData, redisData rediszData, tracer opentracing.Tracer, logger jaegerLog.Factory) Service {
 	// Assign variable dari parameter ke object
 	return Service{
 		agent:  agentData,
+		redis:  redisData,
 		tracer: tracer,
 		logger: logger,
 	}

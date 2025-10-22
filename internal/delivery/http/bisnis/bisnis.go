@@ -2,6 +2,7 @@ package bisnis
 
 import (
 	agentEntity "bisnis-be/internal/entity/agent"
+	bisnisEntity "bisnis-be/internal/entity/bisnis"
 	jaegerLog "bisnis-be/pkg/log"
 	"context"
 
@@ -9,7 +10,9 @@ import (
 )
 
 type IbisnisSvc interface {
-	// LoginAgent(ctx context.Context, agentUser agentEntity.LoginAgent) error
+	AddTransaction(ctx context.Context, addTransaction bisnisEntity.AddTransaction) (bisnisEntity.TransactionResp, string, error)
+	DeleteTransaction(ctx context.Context, deleteTransaction bisnisEntity.DeleteTransaction) (bisnisEntity.TransactionResp, string, error)
+	UpdateTransaction(ctx context.Context, addTransaction bisnisEntity.UpdateTransaction) (bisnisEntity.TransactionResp, string, error)
 }
 
 type IgoldgymSvcStock interface {
