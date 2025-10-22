@@ -14,6 +14,6 @@ WORKDIR /app
 COPY --from=builder /app/main .
 
 # expose port http kamu (misalnya 8080)
-EXPOSE 8080  
+EXPOSE 4334  
 
 CMD ["./main"]

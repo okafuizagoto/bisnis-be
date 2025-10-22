@@ -20,11 +20,14 @@ func (s *Server) JWTMiddleware(next http.Handler) http.Handler {
 			resp := &response.Response{}
 			defer resp.RenderJSON(w, r)
 
-			resp.Error = response.Error{
-				Status: false,
-				Msg:    "Invalid token: unsupported token type",
-				Code:   403,
-			}
+			// resp.Error = response.Error{
+			// 	Status: false,
+			// 	Msg:    "Invalid token: unsupported token type",
+			// 	Code:   403,
+			// }
+			resp.Status = false
+			resp.Msg = "Invalid token: unsupported token type"
+			resp.Code = string(403)
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(403)
@@ -37,11 +40,14 @@ func (s *Server) JWTMiddleware(next http.Handler) http.Handler {
 			resp := &response.Response{}
 			defer resp.RenderJSON(w, r)
 
-			resp.Error = response.Error{
-				Status: false,
-				Msg:    "Invalid token: unsupported token type",
-				Code:   403,
-			}
+			// resp.Error = response.Error{
+			// 	Status: false,
+			// 	Msg:    "Invalid token: unsupported token type",
+			// 	Code:   403,
+			// }
+			resp.Status = false
+			resp.Msg = "Invalid token: unsupported token type"
+			resp.Code = string(403)
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(403)
@@ -62,11 +68,14 @@ func (s *Server) JWTMiddleware(next http.Handler) http.Handler {
 			resp := &response.Response{}
 			defer resp.RenderJSON(w, r)
 
-			resp.Error = response.Error{
-				Status: false,
-				Msg:    err.Error(),
-				Code:   500,
-			}
+			// resp.Error = response.Error{
+			// 	Status: false,
+			// 	Msg:    err.Error(),
+			// 	Code:   500,
+			// }
+			resp.Status = false
+			resp.Msg = err.Error()
+			resp.Code = string(500)
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(500)
@@ -79,11 +88,14 @@ func (s *Server) JWTMiddleware(next http.Handler) http.Handler {
 			resp := &response.Response{}
 			defer resp.RenderJSON(w, r)
 
-			resp.Error = response.Error{
-				Status: false,
-				Msg:    "Invalid token: unsupported token type",
-				Code:   401,
-			}
+			// resp.Error = response.Error{
+			// 	Status: false,
+			// 	Msg:    "Invalid token: unsupported token type",
+			// 	Code:   401,
+			// }
+			resp.Status = false
+			resp.Msg = "Invalid token: unsupported token type"
+			resp.Code = string(401)
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(401)
@@ -94,11 +106,14 @@ func (s *Server) JWTMiddleware(next http.Handler) http.Handler {
 			resp := &response.Response{}
 			defer resp.RenderJSON(w, r)
 
-			resp.Error = response.Error{
-				Status: false,
-				Msg:    "Invalid token: unsupported token type",
-				Code:   401,
-			}
+			// resp.Error = response.Error{
+			// 	Status: false,
+			// 	Msg:    "Invalid token: unsupported token type",
+			// 	Code:   401,
+			// }
+			resp.Status = false
+			resp.Msg = "Invalid token: unsupported token type"
+			resp.Code = string(401)
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(401)

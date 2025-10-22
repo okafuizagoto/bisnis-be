@@ -30,13 +30,13 @@ services:
 
   app:
     image: golang:1.23
-    container_name: golang-app
+    container_name: golang-bisnis-app
     depends_on:
-      - kafka
-      - mysql
+      # - kafka
+      - mysql_bisnis
     environment:
       # - KAFKA_BROKER=kafka:29092
-      - MYSQL_HOST=mysql
+      - MYSQL_HOST=mysql_bisnis
       - MYSQL_USER=user
       - MYSQL_PASSWORD=admin
       - MYSQL_DB=bisnis
@@ -47,7 +47,7 @@ services:
     working_dir: /app
     command: go run cmd/http/main.go
     restart: unless-stopped
-  mysql:
+  mysql_bisnis:
     image: mysql:8.0
     container_name: mysql-bisnis-local
     environment:
@@ -71,6 +71,16 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-padminroot"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 5  
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis-local
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"] # mengaktifkan AOF (durability)
+    restart: unless-stopped
 volumes:
   mysql-bisnis-data:
+    

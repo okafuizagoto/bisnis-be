@@ -2,7 +2,8 @@ server:
   port: ":4334"
 database:
   # master: "butuhdok_butuhdok:Zgamersz123@mysql+tcp(localhost:3306)/butuhdok_gold_gym_be"
-  master: "user:admin@tcp(localhost:3306)/bisnis"
+  # master: "user:admin@tcp(mysql_bisnis:3306)/bisnis" #docker
+  master: "user:admin@tcp(localhost:3306)/bisnis?loc=Asia%2FJakarta&parseTime=true"
   # firebase:
   #   fcmProjectIDB2BPelapak: "gofirebase"
 api:
@@ -12,9 +13,12 @@ swagger:
   schemes:
     - http
 redis:
+  # host: "redis:6379" #docker
   host: "localhost:6379"
   password: ""
 firebase:
   projectID: "gofirebase"
   databaseURL: "https://gofirebase-default-rtdb.asia-southeast1.firebasedatabase.app/"
   storageBucket: "gofirebase.appspot.com"  # optional but recommended if you use Firebase Storage
+jwt:
+  secret: "BISNIS-BE"

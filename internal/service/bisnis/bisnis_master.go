@@ -1,5 +1,10 @@
 package bisnis
 
+// import (
+// 	bisnisEntity "bisnis-be/internal/entity/bisnis"
+// 	"context"
+// )
+
 // "strings"
 
 // "bisnis-be/internal/entity/auth/v2"
@@ -9,5 +14,5 @@ package bisnis
 // "go.opentelemetry.io/otel/attribute"
 // "go.opentelemetry.io/otel/trace"
 
-// func (s Service) GetGoldUser(ctx context.Context) ([]goldEntity.GetGoldUser, error) {
+// func (s Service) AddTransaction(ctx context.Context, addTransaction bisnisEntity.AddTransaction) (agentEntity.AgentResp, string, error) {
 // }

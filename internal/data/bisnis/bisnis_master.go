@@ -1,5 +1,10 @@
 package bisnis
 
+import (
+	"context"
+	agentEntity "bisnis-be/internal/entity/agent"
+)
+
 // func (d Data) GetGoldUser(ctx context.Context) ([]goldEntity.GetGoldUser, error) {
 // 	var (
 // 		user  goldEntity.GetGoldUser
@@ -23,3 +28,10 @@ package bisnis
 // 	}
 // 	return users, err
 // }
+
+func (d Data) LoginAgent(ctx context.Context, agentUser agentEntity.LoginAgent) error {
+	var (
+		err error
+	)
+	return err
+}
