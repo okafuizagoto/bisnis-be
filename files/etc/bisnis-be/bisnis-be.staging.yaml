@@ -1,0 +1,10 @@
+server:
+  port: ":8080"
+database:
+api:
+  master: "user:admin@tcp(localhost:3306)/bisnis"
+  auth: "http://auth.staging/auth"
+swagger:
+  host: "staging.example.com"
+  schemes:
+    - https

@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+# prod
+# app:
+#   build: .
+#   container_name: golang-app
+#   depends_on:
+#     - kafka
+#     - mysql
+#   environment:
+#     - KAFKA_BROKER=kafka:29092
+#     - MYSQL_HOST=mysql
+#     - MYSQL_USER=user
+#     - MYSQL_PASSWORD=admin
+#     - MYSQL_DB=u868654674_gold_gym_bez
+#   ports:
+#     - "8080:8080"
+#   volumes:
+#     - ./files/etc/bisnis-be:/app/files/etc/bisnis-be   # hanya mount config
+#   working_dir: /app
+#   command: ./main
+#   restart: unless-stopped
+#   healthcheck:
+#     test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+#     interval: 30s
+#     timeout: 10s
+#     retries: 5
+#     start_period: 20s
+
+  app:
+    image: golang:1.23
+    container_name: golang-app
+    depends_on:
+      - kafka
+      - mysql
+    environment:
+      # - KAFKA_BROKER=kafka:29092
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=admin
+      - MYSQL_DB=bisnis
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: go run cmd/http/main.go
+    restart: unless-stopped
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-bisnis-local
+    environment:
+      MYSQL_ROOT_PASSWORD: adminroot
+      MYSQL_DATABASE: bisnis
+      MYSQL_USER: user
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-bisnis-data:/var/lib/mysql
+    command: >
+      --gtid_mode=ON
+      --enforce_gtid_consistency=ON
+      --log_bin=binlog
+      --binlog_format=ROW
+      --server-id=1
+      --binlog_row_image=FULL
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-padminroot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  mysql-bisnis-data:
