@@ -2,7 +2,7 @@ package bisnis
 
 import (
 	agentEntity "bisnis-be/internal/entity/agent"
-	// bisnisEntity "bisnis-be/internal/entity/bisnis"
+	bisnisEntity "bisnis-be/internal/entity/bisnis"
 	"bisnis-be/pkg/response"
 	"encoding/json"
 	"fmt"
@@ -35,12 +35,14 @@ func (h *Handler) InsertGoldGym(w http.ResponseWriter, r *http.Request) {
 		metadata interface{}
 		err      error
 
-		loginAgent agentEntity.LoginAgent
-		addAgent   agentEntity.AgentRequest
-		// addTransaction bisnisEntity.AddTransaction
-		respLogin string
-		resp      response.Response
-		types     string
+		loginAgent        agentEntity.LoginAgent
+		addAgent          agentEntity.AgentRequest
+		addTransaction    bisnisEntity.AddTransaction
+		deleteTransaction bisnisEntity.DeleteTransaction
+		updateTransaction bisnisEntity.UpdateTransaction
+		respLogin         string
+		resp              response.Response
+		types             string
 	)
 	defer resp.RenderJSON(w, r)
 
@@ -205,70 +207,198 @@ func (h *Handler) InsertGoldGym(w http.ResponseWriter, r *http.Request) {
 				resp.Code = "00"
 			}
 		}
-		// case "addtransaction":
-		// 	authHeader := r.Header.Get("Authorization")
-		// 	if authHeader == "" {
-		// 		resp.Msg = "Missing Authorization header"
-		// 		resp.Code = "01"
-		// 		return
-		// 	}
-		// 	parts := strings.Split(authHeader, " ")
-		// 	if len(parts) != 2 || parts[0] != "Bearer" {
-		// 		resp.Status = false
-		// 		resp.Msg = "Invalid token format"
-		// 		resp.Code = "01"
-		// 		return
-		// 	}
+	case "addtransaction":
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			resp.Msg = "Missing Authorization header"
+			resp.Code = "01"
+			return
+		}
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			resp.Status = false
+			resp.Msg = "Invalid token format"
+			resp.Code = "01"
+			return
+		}
 
-		// 	tokenStr := parts[1]
+		tokenStr := parts[1]
 
-		// 	// --- Validasi token ---
-		// 	claims, err := auth.ValidateJWT(tokenStr)
-		// 	if err != nil {
-		// 		resp.Status = false
-		// 		resp.Msg = "Invalid token: " + err.Error()
-		// 		resp.Code = "01"
-		// 		return
-		// 	}
+		// --- Validasi token ---
+		claims, err := auth.ValidateJWT(tokenStr)
+		if err != nil {
+			resp.Status = false
+			resp.Msg = "Invalid token: " + err.Error()
+			resp.Code = "01"
+			return
+		}
 
-		// 	userID := claims["user"].(string)
-		// 	fmt.Println("userID", userID)
-		// 	agentStruct := agentEntity.LoginAgent{
-		// 		AgentID:       userID,
-		// 		AgentPassword: "",
-		// 	}
-		// 	validation, err := h.agentSvc.CheckAgent(ctx, agentStruct)
-		// 	if err != nil || (validation != "Success" && validation != "Incorrect password") {
-		// 		// resp.SetError(err, http.StatusInternalServerError)
-		// 		// resp.StatusCode = 5"00"
-		// 		// log.Printf("[ERROR] %s %s - %s\n", r.Method, r.URL, err.Error())
-		// 		// return
-		// 		resp.Msg = validation
-		// 		resp.Code = "01"
-		// 		// resp.Status = true
-		// 		resp.StatusCode = http.StatusNotImplemented // 5"01"
-		// 		return
-		// 	}
-		// 	if validation == "Success" || validation == "Incorrect password" {
-		// 		body, _ := ioutil.ReadAll(r.Body)
-		// 		json.Unmarshal(body, &addTransaction)
-		// 		result, respLogin, err = h.bisnisSvc.AddTransaction(ctx, addTransaction)
-		// 		if err != nil || respLogin != "Success" {
-		// 			// resp.SetError(err, http.StatusInternalServerError)
-		// 			// resp.StatusCode = 5"00"
-		// 			// log.Printf("[ERROR] %s %s - %s\n", r.Method, r.URL, err.Error())
-		// 			// return
-		// 			resp.Msg = respLogin
-		// 			resp.Code = "01"
-		// 			// resp.Status = true
-		// 			resp.StatusCode = http.StatusNotImplemented // 5"01"
-		// 			return
-		// 		}
-		// 		if respLogin == "Success" {
-		// 			resp.Msg = respLogin
-		// 			resp.Code = "00"
-		// 		}
-		// 	}
+		userID := claims["user"].(string)
+		fmt.Println("userID", userID)
+		agentStruct := agentEntity.LoginAgent{
+			AgentID:       userID,
+			AgentPassword: "",
+		}
+		validation, err := h.agentSvc.CheckAgent(ctx, agentStruct)
+		if err != nil || (validation != "Success" && validation != "Incorrect password") {
+			// resp.SetError(err, http.StatusInternalServerError)
+			// resp.StatusCode = 5"00"
+			// log.Printf("[ERROR] %s %s - %s\n", r.Method, r.URL, err.Error())
+			// return
+			resp.Msg = validation
+			resp.Code = "01"
+			// resp.Status = true
+			resp.StatusCode = http.StatusNotImplemented // 5"01"
+			return
+		}
+		if validation == "Success" || validation == "Incorrect password" {
+			body, _ := ioutil.ReadAll(r.Body)
+			json.Unmarshal(body, &addTransaction)
+			result, respLogin, err = h.bisnisSvc.AddTransaction(ctx, addTransaction)
+			if err != nil || respLogin != "Success" {
+				// resp.SetError(err, http.StatusInternalServerError)
+				// resp.StatusCode = 5"00"
+				// log.Printf("[ERROR] %s %s - %s\n", r.Method, r.URL, err.Error())
+				// return
+				resp.Msg = respLogin
+				resp.Code = "01"
+				// resp.Status = true
+				resp.StatusCode = http.StatusNotImplemented // 5"01"
+				return
+			}
+			if respLogin == "Success" {
+				resp.Msg = respLogin
+				resp.Code = "00"
+			}
+		}
+	case "deletetransaction":
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			resp.Msg = "Missing Authorization header"
+			resp.Code = "01"
+			return
+		}
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			resp.Status = false
+			resp.Msg = "Invalid token format"
+			resp.Code = "01"
+			return
+		}
+
+		tokenStr := parts[1]
+
+		// --- Validasi token ---
+		claims, err := auth.ValidateJWT(tokenStr)
+		if err != nil {
+			resp.Status = false
+			resp.Msg = "Invalid token: " + err.Error()
+			resp.Code = "01"
+			return
+		}
+
+		userID := claims["user"].(string)
+		fmt.Println("userID", userID)
+		agentStruct := agentEntity.LoginAgent{
+			AgentID:       userID,
+			AgentPassword: "",
+		}
+		validation, err := h.agentSvc.CheckAgent(ctx, agentStruct)
+		if err != nil || (validation != "Success" && validation != "Incorrect password") {
+			// resp.SetError(err, http.StatusInternalServerError)
+			// resp.StatusCode = 5"00"
+			// log.Printf("[ERROR] %s %s - %s\n", r.Method, r.URL, err.Error())
+			// return
+			resp.Msg = validation
+			resp.Code = "01"
+			// resp.Status = true
+			resp.StatusCode = http.StatusNotImplemented // 5"01"
+			return
+		}
+		if validation == "Success" || validation == "Incorrect password" {
+			body, _ := ioutil.ReadAll(r.Body)
+			json.Unmarshal(body, &deleteTransaction)
+			result, respLogin, err = h.bisnisSvc.DeleteTransaction(ctx, deleteTransaction)
+			if err != nil || respLogin != "Success" {
+				// resp.SetError(err, http.StatusInternalServerError)
+				// resp.StatusCode = 5"00"
+				// log.Printf("[ERROR] %s %s - %s\n", r.Method, r.URL, err.Error())
+				// return
+				resp.Msg = respLogin
+				resp.Code = "01"
+				// resp.Status = true
+				resp.StatusCode = http.StatusNotImplemented // 5"01"
+				return
+			}
+			if respLogin == "Success" {
+				resp.Msg = respLogin
+				resp.Code = "00"
+			}
+		}
+	case "updatetransaction":
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			resp.Msg = "Missing Authorization header"
+			resp.Code = "01"
+			return
+		}
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			resp.Status = false
+			resp.Msg = "Invalid token format"
+			resp.Code = "01"
+			return
+		}
+
+		tokenStr := parts[1]
+
+		// --- Validasi token ---
+		claims, err := auth.ValidateJWT(tokenStr)
+		if err != nil {
+			resp.Status = false
+			resp.Msg = "Invalid token: " + err.Error()
+			resp.Code = "01"
+			return
+		}
+
+		userID := claims["user"].(string)
+		fmt.Println("userID", userID)
+		agentStruct := agentEntity.LoginAgent{
+			AgentID:       userID,
+			AgentPassword: "",
+		}
+		validation, err := h.agentSvc.CheckAgent(ctx, agentStruct)
+		if err != nil || (validation != "Success" && validation != "Incorrect password") {
+			// resp.SetError(err, http.StatusInternalServerError)
+			// resp.StatusCode = 5"00"
+			// log.Printf("[ERROR] %s %s - %s\n", r.Method, r.URL, err.Error())
+			// return
+			resp.Msg = validation
+			resp.Code = "01"
+			// resp.Status = true
+			resp.StatusCode = http.StatusNotImplemented // 5"01"
+			return
+		}
+		if validation == "Success" || validation == "Incorrect password" {
+			body, _ := ioutil.ReadAll(r.Body)
+			json.Unmarshal(body, &updateTransaction)
+			result, respLogin, err = h.bisnisSvc.UpdateTransaction(ctx, updateTransaction)
+			if err != nil || respLogin != "Success" {
+				// resp.SetError(err, http.StatusInternalServerError)
+				// resp.StatusCode = 5"00"
+				// log.Printf("[ERROR] %s %s - %s\n", r.Method, r.URL, err.Error())
+				// return
+				resp.Msg = respLogin
+				resp.Code = "01"
+				// resp.Status = true
+				resp.StatusCode = http.StatusNotImplemented // 5"01"
+				return
+			}
+			if respLogin == "Success" {
+				resp.Msg = respLogin
+				resp.Code = "00"
+			}
+		}
 	}
 
 	if types != "loginagent" {

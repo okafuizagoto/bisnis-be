@@ -1,9 +1,10 @@
-package bisnis
+package redis
 
 import (
 	"context"
 	"log"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	"github.com/opentracing/opentracing-go"
 
@@ -14,6 +15,7 @@ type (
 	// Data ...
 	Data struct {
 		db   *sqlx.DB
+		rdb  *redis.Client
 		stmt *map[string]*sqlx.Stmt
 
 		tracer opentracing.Tracer
@@ -30,49 +32,23 @@ type (
 // Tambahkan query di dalam const
 // getAllUser = "GetAllUser"
 // qGetAllUser = "SELECT * FROM users"
-const (
-	// getGoldUser  = "GetGoldUser"
-	// qGetGoldUser = `SELECT gold_email,gold_password,gold_nama,gold_nomorhp,gold_nomorkartu,gold_cvv,gold_expireddate,gold_namapemegangkartu FROM data_peserta`
-
-	insertTransaction  = "InsertTransaction"
-	qInsertTransaction = `INSERT INTO transaction
-(agent_id, product_id, nama, usia, premium, created_at) VALUES
-(?, ?, ?, ?, ?, NOW())`
-
-	getTransaction  = "GetTransaction"
-	qGetTransaction = `select trans_id, agent_id, product_id, nama, usia, premium, created_at from transaction where agent_id = ? and product_id = ? and nama = ? and usia = ? and premium = ?`
-
-	deleteTransaction  = "DeleteTransaction"
-	qDeleteTransaction = `delete from transaction where agent_id = ? and trans_id = ?`
-
-	updateTransaction  = "UpdateTransaction"
-	qUpdateTransaction = `UPDATE transaction
-SET nama = ?, usia = ?, premium = ?
-WHERE trans_id = ? and agent_id = ? and product_id = ?`
-)
+const ()
 
 var (
-	readStmt = []statement{
-		{getTransaction, qGetTransaction},
-	}
-	insertStmt = []statement{
-		{insertTransaction, qInsertTransaction},
-	}
-	updateStmt = []statement{
-		{updateTransaction, qUpdateTransaction},
-	}
-	deleteStmt = []statement{
-		{deleteTransaction, qDeleteTransaction},
-	}
+	readStmt   = []statement{}
+	insertStmt = []statement{}
+	updateStmt = []statement{}
+	deleteStmt = []statement{}
 )
 
 // New ...
-func New(db *sqlx.DB, tracer opentracing.Tracer, logger jaegerLog.Factory) *Data {
+func New(db *sqlx.DB, rdb *redis.Client, tracer opentracing.Tracer, logger jaegerLog.Factory) *Data {
 	var (
 		stmts = make(map[string]*sqlx.Stmt)
 	)
 	d := &Data{
 		db:     db,
+		rdb:    rdb,
 		tracer: tracer,
 		logger: logger,
 		stmt:   &stmts,

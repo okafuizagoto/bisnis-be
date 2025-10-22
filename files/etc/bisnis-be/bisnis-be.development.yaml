@@ -1,8 +1,8 @@
 server:
-  port: ":4334"
+  port: ":8080"
 database:
   # master: "butuhdok_butuhdok:Zgamersz123@mysql+tcp(localhost:3306)/butuhdok_gold_gym_be"
-  master: "user:admin@tcp(mysql_bisnis:3306)/bisnis" #docker
+  master: "user:admin@tcp(mysql_bisnis:3306)/bisnis?loc=Asia%2FJakarta&parseTime=true" #docker
   # master: "user:admin@tcp(localhost:3306)/bisnis?loc=Asia%2FJakarta&parseTime=true"
   # firebase:
   #   fcmProjectIDB2BPelapak: "gofirebase"

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/go-redis/redis/v8"
 )
 
 var (
@@ -26,46 +27,61 @@ func (s Service) LoginAgent(ctx context.Context, agentLogin agentEntity.LoginAge
 		agentResult   agentEntity.Agent
 		result        string
 		token         auth.Token
+		accessToken   string
+		rdbKey        string
 		err           error
 	)
-
+	rdbKey = "bisnis-be:" + agentLogin.AgentID
 	agentResult, result, err = s.agent.CheckAgent(ctx, agentLogin)
 	if err != nil {
 		return responseLogin, result, errors.Wrap(err, "[Service][LoginAgent]")
 	}
 	if result == "Success" {
-		now := time.Now()
-		expiration := now.Add(12 * time.Hour)
-		claims := jwt.MapClaims{
-			"iss":  jwtApplicationName, // issuer
-			"sub":  agentLogin.AgentID, // subject
-			"user": agentLogin.AgentID, // username
-			"nbf":  now.Unix(),         // not before
-			"iat":  now.Unix(),         // issued at
-			"exp":  expiration.Unix(),  // expiration
-		}
-		cfg, _ = config.Get()
-		jwtSecret := []byte(cfg.JWT.Secret)
-		jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		accessToken, err := jwtToken.SignedString(jwtSecret)
-		if err != nil {
-			return responseLogin, result, errors.Wrap(err, "[SERVICE][LoginAgent][SignedString]")
-		}
-		// 8️⃣ Construct token response
-		token = auth.Token{
-			AccessToken:         accessToken,
-			ExpiresIn:           expiration.Unix() - now.Unix(),
-			ExpiresAt:           expiration.Unix(),
-			TokenType:           "Bearer",
-			ForceChangePassword: 0,
-		}
-		responseLogin = agentEntity.ResponseLogin{
-			AgentID:    agentLogin.AgentID,
-			AgentName:  agentResult.AgentName,
-			AgentToken: token.TokenType + " " + accessToken,
+		err = s.redis.GetFromRedis(ctx, rdbKey, &token)
+		if err == redis.Nil {
+			now := time.Now()
+			expiration := now.Add(12 * time.Hour)
+			claims := jwt.MapClaims{
+				"iss":  jwtApplicationName,
+				"sub":  agentLogin.AgentID,
+				"user": agentLogin.AgentID,
+				"nbf":  now.Unix(),
+				"iat":  now.Unix(),
+				"exp":  expiration.Unix(),
+			}
+			cfg, _ = config.Get()
+			jwtSecret := []byte(cfg.JWT.Secret)
+			jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+			accessToken, err = jwtToken.SignedString(jwtSecret)
+			if err != nil {
+				return responseLogin, result, errors.Wrap(err, "[SERVICE][LoginAgent][SignedString]")
+			}
+			ttl := time.Until(expiration)
+
+			token = auth.Token{
+				AccessToken:         accessToken,
+				ExpiresIn:           expiration.Unix() - now.Unix(),
+				ExpiresAt:           expiration.Unix(),
+				TokenType:           "Bearer",
+				ForceChangePassword: 0,
+			}
+			err = s.redis.AddToRedis(ctx, token, rdbKey, ttl)
+			if err != nil {
+				return responseLogin, result, errors.Wrap(err, "[SERVICE][LoginAgent][addToRedis]")
+			}
+			responseLogin = agentEntity.ResponseLogin{
+				AgentID:    agentLogin.AgentID,
+				AgentName:  agentResult.AgentName,
+				AgentToken: token.TokenType + " " + accessToken,
+			}
+		} else {
+			responseLogin = agentEntity.ResponseLogin{
+				AgentID:    agentLogin.AgentID,
+				AgentName:  agentResult.AgentName,
+				AgentToken: token.TokenType + " " + token.AccessToken,
+			}
 		}
 	}
-	// return responseLogin, err
 	return responseLogin, result, err
 }
 

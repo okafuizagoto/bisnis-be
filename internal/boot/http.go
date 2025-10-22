@@ -48,6 +48,12 @@ import (
 
 	agentData "bisnis-be/internal/data/agent"
 	agentService "bisnis-be/internal/service/agent"
+
+	productParameterData "bisnis-be/internal/data/productparameter"
+
+	productData "bisnis-be/internal/data/product"
+
+	redisData "bisnis-be/internal/data/redis"
 	// goldgymStockData "bisnis-be/internal/data/stock"
 	// pushNotifData "bisnis-be/internal/data/pushnotif"
 	// pushNotifHandler "bisnis-be/internal/delivery/http/pushnotif"
@@ -138,13 +144,18 @@ func HTTP() error {
 	sdst := goldgymStockData.New(db, nil, nil, rdb, tracer, zlogger)
 	ssst := goldgymStockService.New(sdst, tracer, zlogger)
 
+	sdrd := redisData.New(db, rdb, tracer, zlogger)
+
 	sdag := agentData.New(db, tracer, zlogger)
-	ssag := agentService.New(sdag, tracer, zlogger)
+	ssag := agentService.New(sdag, sdrd, tracer, zlogger)
+
+	sdpp := productParameterData.New(db, tracer, zlogger)
+	sdpd := productData.New(db, tracer, zlogger)
 
 	// Diganti dengan domain yang anda buat
 	sd := goldgymData.New(db, tracer, zlogger)
 	// ss := goldgymService.New(sd, ad, tracer, zlogger)
-	ss := goldgymService.New(sd, tracer, zlogger)
+	ss := goldgymService.New(sd, sdag, sdpp, sdpd, tracer, zlogger)
 	sh := goldgymHandler.New(ss, ssst, ssag, tracer, zlogger)
 
 	// sha := authHandler.New(ss, tracer, zlogger)

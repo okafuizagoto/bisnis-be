@@ -1,4 +1,4 @@
-package bisnis
+package productparameter
 
 import (
 	"context"
@@ -34,36 +34,18 @@ const (
 	// getGoldUser  = "GetGoldUser"
 	// qGetGoldUser = `SELECT gold_email,gold_password,gold_nama,gold_nomorhp,gold_nomorkartu,gold_cvv,gold_expireddate,gold_namapemegangkartu FROM data_peserta`
 
-	insertTransaction  = "InsertTransaction"
-	qInsertTransaction = `INSERT INTO transaction
-(agent_id, product_id, nama, usia, premium, created_at) VALUES
-(?, ?, ?, ?, ?, NOW())`
-
-	getTransaction  = "GetTransaction"
-	qGetTransaction = `select trans_id, agent_id, product_id, nama, usia, premium, created_at from transaction where agent_id = ? and product_id = ? and nama = ? and usia = ? and premium = ?`
-
-	deleteTransaction  = "DeleteTransaction"
-	qDeleteTransaction = `delete from transaction where agent_id = ? and trans_id = ?`
-
-	updateTransaction  = "UpdateTransaction"
-	qUpdateTransaction = `UPDATE transaction
-SET nama = ?, usia = ?, premium = ?
-WHERE trans_id = ? and agent_id = ? and product_id = ?`
+	getProductParameterByProdID  = "GetProductParameterByProdID"
+	qGetProductParameterByProdID = `SELECT id, product_id, parameter_name, parameter_value, active, created_at
+FROM bisnis.product_parameter where product_id = ?`
 )
 
 var (
 	readStmt = []statement{
-		{getTransaction, qGetTransaction},
+		{getProductParameterByProdID, qGetProductParameterByProdID},
 	}
-	insertStmt = []statement{
-		{insertTransaction, qInsertTransaction},
-	}
-	updateStmt = []statement{
-		{updateTransaction, qUpdateTransaction},
-	}
-	deleteStmt = []statement{
-		{deleteTransaction, qDeleteTransaction},
-	}
+	insertStmt = []statement{}
+	updateStmt = []statement{}
+	deleteStmt = []statement{}
 )
 
 // New ...

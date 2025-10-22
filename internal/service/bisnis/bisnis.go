@@ -2,6 +2,10 @@ package bisnis
 
 import (
 	"bisnis-be/internal/entity"
+	agentEntity "bisnis-be/internal/entity/agent"
+	bisnisEntity "bisnis-be/internal/entity/bisnis"
+	productEntity "bisnis-be/internal/entity/product"
+	productParamsEntity "bisnis-be/internal/entity/productparameter"
 	jaegerLog "bisnis-be/pkg/log"
 	"context"
 	"errors"
@@ -13,25 +17,46 @@ import (
 // Data ...
 // Masukkan function dari package data ke dalam interface ini
 type Data interface {
+	AddTransaction(ctx context.Context, addTransaction bisnisEntity.AddTransaction) (int, error)
+	DeleteTransaction(ctx context.Context, deleteTransactionz bisnisEntity.DeleteTransaction) (int, string, error)
+	UpdateTransaction(ctx context.Context, addTransaction bisnisEntity.UpdateTransaction) (int, string, error)
+}
+
+type AgentData interface {
+	CheckAgent(ctx context.Context, agentUser agentEntity.LoginAgent) (agentEntity.Agent, string, error)
+}
+
+type ProductParamaterData interface {
+	GetProductParameterByProdID(ctx context.Context, productid string) ([]productParamsEntity.ProductParameter, string, error)
+}
+
+type ProductData interface {
+	GetProductByProdID(ctx context.Context, productid string) (productEntity.Product, string, error)
 }
 
 // Service ...
 // Tambahkan variable sesuai banyak data layer yang dibutuhkan
 type Service struct {
-	bisnis Data
-	tracer opentracing.Tracer
+	bisnis           Data
+	agent            AgentData
+	productparameter ProductParamaterData
+	product          ProductData
+	tracer           opentracing.Tracer
 	// tracer trace.Tracer
 	logger jaegerLog.Factory
 }
 
 // New ...
 // Tambahkan parameter sesuai banyak data layer yang dibutuhkan
-func New(goldgymData Data, tracer opentracing.Tracer, logger jaegerLog.Factory) Service {
+func New(goldgymData Data, agentData AgentData, productParamaterData ProductParamaterData, productData ProductData, tracer opentracing.Tracer, logger jaegerLog.Factory) Service {
 	// Assign variable dari parameter ke object
 	return Service{
-		bisnis: goldgymData,
-		tracer: tracer,
-		logger: logger,
+		bisnis:           goldgymData,
+		agent:            agentData,
+		productparameter: productParamaterData,
+		product:          productData,
+		tracer:           tracer,
+		logger:           logger,
 	}
 }
 
