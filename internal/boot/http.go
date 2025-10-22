@@ -21,7 +21,7 @@ import (
 
 	// Log "bisnis-be/pkg/logs"
 
-	"bisnis-be/pkg/firebaseclient"
+	// "bisnis-be/pkg/firebaseclient"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -55,14 +55,14 @@ import (
 func HTTP() error {
 	var (
 		// 	ctx = context.Background()
-		cred map[string]string
-		cfg  *config.Config // Configuration object
+		// cred map[string]string
+		cfg *config.Config // Configuration object
 	)
 	err := config.Init()
 	if err != nil {
 		log.Fatalf("[CONFIG] Failed to initialize config: %v", err)
 	}
-	cfg, cred = config.Get()
+	cfg, _ = config.Get()
 
 	rdb := newRedisClient(cfg.Redis)
 
@@ -78,28 +78,28 @@ func HTTP() error {
 		log.Fatalf("[DB] Failed to initialize database connection: %v", err)
 	}
 
-	// Open MySQL DB Connection
-	f, err := firebaseclient.NewClient(cfg, cred)
-	if err != nil {
-		log.Fatalf("[FIREBASE] Failed to initialize firebase client: %v", err)
-	}
-	fs := f.StorageClient
+	// // Open MySQL DB Connection
+	// f, err := firebaseclient.NewClient(cfg, cred)
+	// if err != nil {
+	// 	log.Fatalf("[FIREBASE] Failed to initialize firebase client: %v", err)
+	// }
+	// fs := f.StorageClient
 
-	ctx := context.Background()
-	fmt.Println("cfg.Firebase", cfg.Firebase)
-	fmt.Println("cfg.Database.Master", cfg.Database.Master)
-	fmt.Println("cred", cred)
-	firebaseApp, err := openFirebaseClient(ctx, cfg.Firebase, cred)
-	if err != nil {
-		log.Fatalf("[FIREBASE] Failed to initialize firebase client: %v", err)
-	}
-	fmt.Println("firebaseApp", firebaseApp)
+	// ctx := context.Background()
+	// fmt.Println("cfg.Firebase", cfg.Firebase)
+	// fmt.Println("cfg.Database.Master", cfg.Database.Master)
+	// fmt.Println("cred", cred)
+	// firebaseApp, err := openFirebaseClient(ctx, cfg.Firebase, cred)
+	// if err != nil {
+	// 	log.Fatalf("[FIREBASE] Failed to initialize firebase client: %v", err)
+	// }
+	// fmt.Println("firebaseApp", firebaseApp)
 
-	fsdb, err := openFirestoreClient(ctx, firebaseApp)
-	if err != nil {
-		log.Fatalf("[FIRESTORE] Failed to initialize Firestore client: %v", err)
-	}
-	defer fsdb.Close()
+	// fsdb, err := openFirestoreClient(ctx, firebaseApp)
+	// if err != nil {
+	// 	log.Fatalf("[FIRESTORE] Failed to initialize Firestore client: %v", err)
+	// }
+	// defer fsdb.Close()
 
 	// fsdb, err := openFirebaseDatabaseClient(ctx, firebaseApp)
 	// if err != nil {
@@ -132,7 +132,7 @@ func HTTP() error {
 	// httpc := httpclient.NewClient(tracer)
 	// ad := auth.New(httpc, cfg.API.Auth)
 
-	sdst := goldgymStockData.New(db, fsdb, fs, rdb, tracer, zlogger)
+	sdst := goldgymStockData.New(db, nil, nil, rdb, tracer, zlogger)
 	ssst := goldgymStockService.New(sdst, tracer, zlogger)
 
 	// Diganti dengan domain yang anda buat
@@ -155,7 +155,7 @@ func HTTP() error {
 		if err != nil {
 			log.Printf("[VIPER] Error get config file, %v", err)
 		}
-		cfg, cred = config.Get()
+		cfg, _ = config.Get()
 		masterNew, err := openDatabases(cfg)
 		if err != nil {
 			log.Fatalf("[DB] Failed to initialize database connection: %v", err)
