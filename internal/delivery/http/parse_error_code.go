@@ -26,13 +26,17 @@ func ParseErrorCode(err string) response.Response {
 		errResp = response.Error{
 			Status: false,
 			Msg:    "Failed to insert data",
-			Code:   10001,
+			// Code:   10001,
+			Code: 10002,
 		}
 	}
 
 	errResp.Msg = errResp.Msg + " | " + err
 
 	return response.Response{
-		Error: errResp,
+		// Error: errResp,
+		Code:   string(errResp.Code),
+		Msg:    errResp.Msg,
+		Status: errResp.Status,
 	}
 }

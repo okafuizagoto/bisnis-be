@@ -68,7 +68,10 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("[ERROR] %s %s - %v\n", r.Method, r.URL, err)
 		resp.StatusCode = 404
-		resp.Error = errRes
+		// resp.Error = errRes
+		resp.Code = string(errRes.Code)
+		resp.Msg = errRes.Msg
+		resp.Status = errRes.Status
 		return
 	}
 }

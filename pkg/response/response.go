@@ -6,11 +6,24 @@ import (
 )
 
 // Response defines http response for the client
+//
+//	type Response struct {
+//		Data     interface{} `json:"data,omitempty"`
+//		Metadata interface{} `json:"metadata,omitempty"`
+//		// Error      Error       `json:"error"`
+//		Status     bool   `json:"status"` // true if we have error
+//		Msg        string `json:"msg"`    // error message
+//		Code       int    `json:"code"`   // error code from application, it is not http status code
+//		StatusCode int    `json:"-"`
+//	}
 type Response struct {
-	Data       interface{} `json:"data,omitempty"`
-	Metadata   interface{} `json:"metadata,omitempty"`
-	Error      Error       `json:"error"`
+	// Error      Error       `json:"error"`
+	Status     bool        `json:"status,omitempty"` // true if we have error
+	Code       string      `json:"ResponseCode"`     // error code from application, it is not http status code
+	Msg        string      `json:"ResponseDesc"`     // error message
 	StatusCode int         `json:"-"`
+	Data       interface{} `json:"Data,omitempty"`
+	Metadata   interface{} `json:"metadata,omitempty"`
 }
 
 // Error defines the error
@@ -30,10 +43,13 @@ func (res *Response) SetError(err error, code ...int) {
 	}
 
 	if err != nil {
-		res.Error = Error{
-			Msg:    err.Error(),
-			Status: true,
-		}
+		// res.Error = Error{
+		// 	Msg:    err.Error(),
+		// 	Status: true,
+		// }
+		res.Status = true
+		res.Msg = err.Error()
+		res.Code = string(res.StatusCode) // bisa kamu ubah sesuai kebutuhan
 	}
 
 }

@@ -45,6 +45,9 @@ import (
 
 	goldgymStockData "bisnis-be/internal/data/stock"
 	goldgymStockService "bisnis-be/internal/service/stock"
+
+	agentData "bisnis-be/internal/data/agent"
+	agentService "bisnis-be/internal/service/agent"
 	// goldgymStockData "bisnis-be/internal/data/stock"
 	// pushNotifData "bisnis-be/internal/data/pushnotif"
 	// pushNotifHandler "bisnis-be/internal/delivery/http/pushnotif"
@@ -135,11 +138,14 @@ func HTTP() error {
 	sdst := goldgymStockData.New(db, nil, nil, rdb, tracer, zlogger)
 	ssst := goldgymStockService.New(sdst, tracer, zlogger)
 
+	sdag := agentData.New(db, tracer, zlogger)
+	ssag := agentService.New(sdag, tracer, zlogger)
+
 	// Diganti dengan domain yang anda buat
 	sd := goldgymData.New(db, tracer, zlogger)
 	// ss := goldgymService.New(sd, ad, tracer, zlogger)
 	ss := goldgymService.New(sd, tracer, zlogger)
-	sh := goldgymHandler.New(ss, ssst, tracer, zlogger)
+	sh := goldgymHandler.New(ss, ssst, ssag, tracer, zlogger)
 
 	// sha := authHandler.New(ss, tracer, zlogger)
 	// sh := goldgymHandler.New(ss, tracer, zlogger)

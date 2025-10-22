@@ -10,6 +10,7 @@ type (
 		Firebase   FirebaseConfig `yaml:"firebase"`
 		Swagger    SwaggerConfig  `yaml:"swagger"`
 		Redis      Redis          `yaml:"redis"`
+		JWT        JWTConfig      `yaml:"jwt"`
 	}
 
 	// ServerConfig ...
@@ -48,5 +49,8 @@ type (
 	Redis struct {
 		Host     string `yaml:"host"`
 		Password string `yaml:"password"`
+	}
+	JWTConfig struct {
+		Secret string `yaml:"secret"`
 	}
 )

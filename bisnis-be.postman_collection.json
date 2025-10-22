@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "5feed780-2932-4a17-9ade-12271fce433f",
+		"name": "bisnis-be",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18602321"
+	},
+	"item": [
+		{
+			"name": "loginagent",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"agent_id\":\"BFA01\",\r\n    \"password\":\"P@ssagent1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4334/bisnis/v2/userdata?type=loginagent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4334",
+					"path": [
+						"bisnis",
+						"v2",
+						"userdata"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "loginagent"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addagent",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjExODIwNjAsImlhdCI6MTc2MTEzODg2MCwiaXNzIjoiQklTTklTLUJFIiwibmJmIjoxNzYxMTM4ODYwLCJzdWIiOiJCRkEwMSIsInVzZXIiOiJCRkEwMSJ9.S0bRuYzGJekMlrrJXmtoLOFTjW3tqp4zOadZdxhBTNQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"agent_id\":\"BFA03\",\r\n    \"agent_name\":\"wow\",\r\n    \"password\":\"P@ssagent1\",\r\n    \"active\":\"Y\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4334/bisnis/v2/userdata?type=addagent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4334",
+					"path": [
+						"bisnis",
+						"v2",
+						"userdata"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "addagent"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteagent",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjExODIwNjAsImlhdCI6MTc2MTEzODg2MCwiaXNzIjoiQklTTklTLUJFIiwibmJmIjoxNzYxMTM4ODYwLCJzdWIiOiJCRkEwMSIsInVzZXIiOiJCRkEwMSJ9.S0bRuYzGJekMlrrJXmtoLOFTjW3tqp4zOadZdxhBTNQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"agent_id\":\"BFA03\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4334/bisnis/v2/userdata?type=deleteagent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4334",
+					"path": [
+						"bisnis",
+						"v2",
+						"userdata"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "deleteagent"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateagent",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjExODIwNjAsImlhdCI6MTc2MTEzODg2MCwiaXNzIjoiQklTTklTLUJFIiwibmJmIjoxNzYxMTM4ODYwLCJzdWIiOiJCRkEwMSIsInVzZXIiOiJCRkEwMSJ9.S0bRuYzGJekMlrrJXmtoLOFTjW3tqp4zOadZdxhBTNQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"agent_id\":\"BFA02\",\r\n    \"agent_name\":\"teso\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4334/bisnis/v2/userdata?type=updateagent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4334",
+					"path": [
+						"bisnis",
+						"v2",
+						"userdata"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "updateagent"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

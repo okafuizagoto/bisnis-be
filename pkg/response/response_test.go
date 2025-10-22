@@ -107,7 +107,8 @@ func TestErrorMsg(t *testing.T) {
 			err = json.NewDecoder(resp.Body).Decode(&respBody)
 			require.NoError(t, err)
 
-			require.Equal(t, tc.err, respBody.Error)
+			// require.Equal(t, tc.err, respBody.Error)
+			require.Equal(t, tc.err, respBody.Msg)
 		})
 	}
 

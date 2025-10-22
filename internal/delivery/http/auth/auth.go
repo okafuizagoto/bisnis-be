@@ -14,7 +14,7 @@ package bisnis
 // 	}
 // 	log.Println("testDelivery2")
 
-// 	result, metadata, err := h.goldgymSvc.LoginUser(ctx, user, password, r.RemoteAddr)
+// 	result, metadata, err := h.bisnisSvc.LoginUser(ctx, user, password, r.RemoteAddr)
 // 	log.Println("testDelivery3")
 // 	if err != nil {
 // 		// Return error message with HTTP 200 OK
