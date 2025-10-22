@@ -71,6 +71,16 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-padminroot"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 5  
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis-local
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"] # mengaktifkan AOF (durability)
+    restart: unless-stopped
 volumes:
   mysql-bisnis-data:
+    

@@ -2,7 +2,8 @@ server:
   port: ":4334"
 database:
   # master: "butuhdok_butuhdok:Zgamersz123@mysql+tcp(localhost:3306)/butuhdok_gold_gym_be"
-  master: "user:admin@tcp(mysql_bisnis:3306)/bisnis"
+  master: "user:admin@tcp(mysql_bisnis:3306)/bisnis" #docker
+  # master: "user:admin@tcp(localhost:3306)/bisnis"
   # firebase:
   #   fcmProjectIDB2BPelapak: "gofirebase"
 api:
@@ -12,7 +13,8 @@ swagger:
   schemes:
     - http
 redis:
-  host: "localhost:6379"
+  host: "redis:6379" #docker
+  # host: "localhost:6379"
   password: ""
 firebase:
   projectID: "gofirebase"
