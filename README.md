@@ -124,3 +124,19 @@ AI menggunakan chatgpt, penggunaan ai digunakan pada saat mencari beberapa synta
 
 # Redis
 redis digunakan pada saat create token baru di endpoint loginagent (set redis), sehingga ketika agent_id yang sudah pernah dihit sebelumnya di hit kembali, tidak akan create ualng token tetapi menggunakan token lama dengan ttl / time duration sama seperti token expired.
+
+# Alur Program
+1. Hit endpoint http request
+2. Server golang membaca
+3. lalu masuk ke delivery->handler, disini body request dibaca dan di unmarshal
+4. memanggil function service dari delivery/handler
+5. di service, ada nya logika seperti if else data
+6. service mengirim hasil body request ke data
+7. data mengelola hasil request body dan memanggil query
+8. query membaca paramater dan membaca koneksi dari http boot
+9. hasil dari query dikeluarkan di data
+10. data melempar hasil query ke service
+11. service melakukan validasi / logika kembali pada hasil query
+12. service mengirim ke delivery
+13. delivery melempar ke server
+14. server mengeluarkan output response hasil query
